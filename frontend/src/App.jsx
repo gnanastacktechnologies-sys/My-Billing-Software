@@ -9,6 +9,7 @@ import Dashboard from './pages/Dashboard';
 import CreateProject from './pages/projects/CreateProject';
 import InProgress from './pages/projects/InProgress';
 import Completed from './pages/projects/Completed';
+import ProjectManagementSystem from './pages/projects/ProjectManagementSystem';
 import Settings from './pages/Settings';
 import Profile from './pages/Profile';
 
@@ -39,6 +40,7 @@ const App = () => {
             <Route path="create" element={<CreateProject />} />
             <Route path="in-progress" element={<InProgress />} />
             <Route path="completed" element={<Completed />} />
+            <Route path="current" element={<ProjectManagementSystem />} />
           </Route>
 
           <Route path="settings" element={<Settings />} />

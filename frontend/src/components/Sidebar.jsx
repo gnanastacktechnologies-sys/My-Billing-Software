@@ -17,7 +17,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
     navigate('/');
   };
 
-  const isProjectActive = location.pathname.includes('/projects');
+  const isProjectActive = location.pathname.includes('/projects') && !location.pathname.includes('/projects/current');
 
   const navItemClasses = "flex items-center py-3 text-indigo-100/80 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 rounded-xl mx-3 mb-1 font-medium";
   const activeClasses = "bg-white/20 text-white shadow-lg border border-white/10";
@@ -71,6 +71,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
           >
             <LayoutDashboard size={20} className={isExpanded ? "mr-3 shrink-0" : "shrink-0"} />
             {isExpanded && <span>Dashboard</span>}
+          </NavLink>
+
+          <NavLink 
+            to="/projects/current" 
+            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? 'px-4' : 'justify-center'} bg-indigo-500/10 border border-indigo-400/20`}
+            title="Project Management System"
+          >
+            <FolderKanban size={20} className={isExpanded ? "mr-3 shrink-0 text-indigo-300" : "shrink-0 text-indigo-300"} />
+            {isExpanded && <span className="text-indigo-100 font-semibold">Project Management System</span>}
           </NavLink>
 
           {/* Projects Dropdown */}

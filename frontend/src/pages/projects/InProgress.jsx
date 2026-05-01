@@ -28,7 +28,7 @@ const InProgress = () => {
   const fetchProjects = useCallback(async () => {
     Promise.resolve().then(() => setLoading(true));
     try {
-      const res = await axios.get(`/projects?status=In Progress&page=${page}&limit=100`);
+      const res = await axios.get(`/projects?status=In Progress&category=billing&page=${page}&limit=100`);
       setAllData(res.data.projects);
       setPages(res.data.pages);
     } catch (error) {

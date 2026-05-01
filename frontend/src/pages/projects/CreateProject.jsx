@@ -12,7 +12,8 @@ const CreateProject = () => {
     customerPhone: '',
     description: '',
     price: '',
-    status: 'In Progress'
+    status: 'In Progress',
+    category: 'billing'
   });
 
   const handleChange = (e) => {
