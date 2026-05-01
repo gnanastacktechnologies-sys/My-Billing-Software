@@ -6,29 +6,51 @@ const { generateInvoicePDF } = require('../utils/generateInvoice');
 exports.createProject = async (req, res) => {
   try {
     const { 
-      projectName, customerName, customerPhone, projectType, description, price, 
-      pricingItems, hostingStart, hostingEnd, maintStart, maintEnd, 
-      status, category 
+      projectName, customerName, customerPhone, customerEmail, customerAddress, customFields, requirements, requirementNotes, contentPages, deadline, projectType, description, otherNotes, price, 
+      pricingItems, hostingCost, maintenanceCost, hostingStart, hostingEnd, maintStart, maintEnd, 
+      discountType, discountValue, status, category 
     } = req.body;
+
+    const finalHostingEnd = hostingEnd || hostingCost || 0;
+    const finalMaintEnd = maintEnd || maintenanceCost || 0;
 
     const totalPricingItemsEnd = pricingItems && pricingItems.length > 0 
       ? pricingItems.reduce((sum, item) => sum + (Number(item.endPrice) || 0), 0)
       : (price || 0);
       
-    const totalCalculatedPriceEnd = totalPricingItemsEnd + (Number(hostingEnd) || 0) + (Number(maintEnd) || 0);
+    const subtotal = totalPricingItemsEnd + (Number(finalHostingEnd) || 0) + (Number(finalMaintEnd) || 0);
+    
+    let discount = 0;
+    if (discountType === 'amount') {
+      discount = Number(discountValue) || 0;
+    } else if (discountType === 'percentage') {
+      discount = (subtotal * (Number(discountValue) || 0)) / 100;
+    }
+    
+    const totalCalculatedPriceEnd = subtotal - discount;
 
     const project = new Project({
       projectName,
       customerName,
       customerPhone,
+      customerEmail,
+      customerAddress,
+      customFields: customFields || [],
+      requirements: requirements || {},
+      requirementNotes: requirementNotes || {},
+      contentPages: contentPages || [],
+      deadline,
       projectType,
       description,
+      otherNotes,
       price: totalCalculatedPriceEnd,
       pricingItems: pricingItems || [],
-      hostingStart: Number(hostingStart) || 0,
-      hostingEnd: Number(hostingEnd) || 0,
-      maintStart: Number(maintStart) || 0,
-      maintEnd: Number(maintEnd) || 0,
+      hostingStart: Number(hostingStart) || Number(hostingCost) || 0,
+      hostingEnd: Number(finalHostingEnd),
+      maintStart: Number(maintStart) || Number(maintenanceCost) || 0,
+      maintEnd: Number(finalMaintEnd),
+      discountType: discountType || 'none',
+      discountValue: Number(discountValue) || 0,
       status: status || 'In Progress',
       category: category || 'billing'
     });
@@ -99,8 +121,9 @@ exports.updateProjectStatus = async (req, res) => {
 exports.updateProject = async (req, res) => {
   try {
     const { 
-      projectName, customerName, customerPhone, projectType, description, price, 
-      pricingItems, hostingStart, hostingEnd, maintStart, maintEnd 
+      projectName, customerName, customerPhone, customerEmail, customerAddress, customFields, requirements, requirementNotes, deadline, projectType, description, otherNotes, price, 
+      pricingItems, hostingStart, hostingEnd, maintStart, maintEnd,
+      discountType, discountValue
     } = req.body;
 
     const project = await Project.findById(req.params.id);
@@ -109,8 +132,18 @@ exports.updateProject = async (req, res) => {
     project.projectName = projectName || project.projectName;
     project.customerName = customerName !== undefined ? customerName : project.customerName;
     project.customerPhone = customerPhone !== undefined ? customerPhone : project.customerPhone;
+    project.customerEmail = customerEmail !== undefined ? customerEmail : project.customerEmail;
+    project.customerAddress = customerAddress !== undefined ? customerAddress : project.customerAddress;
+    project.customFields = customFields !== undefined ? customFields : project.customFields;
+    project.requirements = requirements !== undefined ? requirements : project.requirements;
+    project.requirementNotes = requirementNotes !== undefined ? requirementNotes : project.requirementNotes;
+    project.contentPages = contentPages !== undefined ? contentPages : project.contentPages;
+    project.deadline = deadline !== undefined ? deadline : project.deadline;
     project.projectType = projectType || project.projectType;
     project.description = description || project.description;
+    project.otherNotes = otherNotes !== undefined ? otherNotes : project.otherNotes;
+    project.discountType = discountType !== undefined ? discountType : project.discountType;
+    project.discountValue = discountValue !== undefined ? Number(discountValue) : project.discountValue;
 
     project.hostingStart = hostingStart !== undefined ? Number(hostingStart) : project.hostingStart;
     project.hostingEnd = hostingEnd !== undefined ? Number(hostingEnd) : project.hostingEnd;
@@ -121,9 +154,18 @@ exports.updateProject = async (req, res) => {
       project.pricingItems = pricingItems;
     }
 
-    // Always recalculate price based on ranges
+    // Recalculate price
     const basePriceEnd = project.pricingItems.reduce((sum, item) => sum + (Number(item.endPrice) || 0), 0);
-    project.price = basePriceEnd + project.hostingEnd + project.maintEnd;
+    const subtotal = basePriceEnd + project.hostingEnd + project.maintEnd;
+    
+    let discount = 0;
+    if (project.discountType === 'amount') {
+      discount = project.discountValue;
+    } else if (project.discountType === 'percentage') {
+      discount = (subtotal * project.discountValue) / 100;
+    }
+    
+    project.price = subtotal - discount;
     
     await project.save();
     res.json(project);

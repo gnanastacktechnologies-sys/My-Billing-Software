@@ -19,7 +19,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
   const isProjectActive = location.pathname.includes('/projects') && !location.pathname.includes('/projects/current');
 
-  const navItemClasses = "flex items-center py-3 text-indigo-100/80 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 rounded-xl mx-3 mb-1 font-medium";
+  const navItemClasses = "flex items-start py-3.5 text-indigo-100/80 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 rounded-xl mx-3 mb-1 font-bold px-4";
   const activeClasses = "bg-white/20 text-white shadow-lg border border-white/10";
 
   return (
@@ -66,20 +66,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         <nav className="flex-1 w-full overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-white/20 hover:scrollbar-thumb-white/30">
           <NavLink 
             to="/dashboard" 
-            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? 'px-4' : 'justify-center'}`}
+            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? '' : 'justify-center'}`}
             title="Dashboard"
           >
-            <LayoutDashboard size={20} className={isExpanded ? "mr-3 shrink-0" : "shrink-0"} />
-            {isExpanded && <span>Dashboard</span>}
+            <LayoutDashboard size={20} className={isExpanded ? "mr-3 mt-0.5 shrink-0" : "shrink-0"} />
+            {isExpanded && <span className="leading-tight">Dashboard</span>}
           </NavLink>
 
           <NavLink 
             to="/projects/current" 
-            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? 'px-4' : 'justify-center'} bg-indigo-500/10 border border-indigo-400/20`}
+            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? '' : 'justify-center'}`}
             title="Project Management System"
           >
-            <FolderKanban size={20} className={isExpanded ? "mr-3 shrink-0 text-indigo-300" : "shrink-0 text-indigo-300"} />
-            {isExpanded && <span className="text-indigo-100 font-semibold">Project Management System</span>}
+            <FolderKanban size={20} className={isExpanded ? "mr-3 mt-0.5 shrink-0" : "shrink-0"} />
+            {isExpanded && <span className="leading-tight">Project Management System</span>}
           </NavLink>
 
           {/* Projects Dropdown */}
@@ -89,15 +89,15 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
                 if (!isExpanded) setIsExpanded(true);
                 setProjectsOpen(!projectsOpen);
               }}
-              className={`w-full flex items-center py-3 text-indigo-100/80 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 rounded-xl font-medium ${isProjectActive ? 'bg-white/10 text-white border border-white/5' : ''} ${isExpanded ? 'px-4 justify-between' : 'justify-center'}`}
+              className={`w-full flex items-start py-3.5 text-indigo-100/80 hover:text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 rounded-xl font-bold px-4 ${isProjectActive ? 'bg-white/10 text-white border border-white/5' : ''} ${isExpanded ? 'justify-between' : 'justify-center'}`}
               title="Projects"
             >
-              <div className="flex items-center">
-                <FolderKanban size={20} className={isExpanded ? "mr-3 shrink-0" : "shrink-0"} />
-                {isExpanded && <span>Projects</span>}
+              <div className="flex items-start">
+                <FolderKanban size={20} className={isExpanded ? "mr-3 mt-0.5 shrink-0" : "shrink-0"} />
+                {isExpanded && <span className="leading-tight">Projects</span>}
               </div>
               {isExpanded && (
-                projectsOpen ? <ChevronDown size={16} className="transition-transform duration-300 shrink-0" /> : <ChevronRight size={16} className="transition-transform duration-300 shrink-0" />
+                projectsOpen ? <ChevronDown size={16} className="transition-transform duration-300 shrink-0 mt-1" /> : <ChevronRight size={16} className="transition-transform duration-300 shrink-0 mt-1" />
               )}
             </button>
             
@@ -105,21 +105,21 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
             <div className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded && (projectsOpen || isProjectActive) ? 'max-h-48 opacity-100 mt-2 space-y-1' : 'max-h-0 opacity-0 hidden'}`}>
               <NavLink 
                 to="/projects/create" 
-                className={({isActive}) => `flex items-center pl-12 pr-4 py-2.5 text-sm rounded-xl transition-all duration-300 ${isActive ? 'text-white bg-white/20 font-medium shadow-inner' : 'text-indigo-200/70 hover:text-white hover:bg-white/5'}`}
+                className={({isActive}) => `flex items-center pl-12 pr-4 py-2.5 text-sm rounded-xl transition-all duration-300 font-bold ${isActive ? 'text-white bg-white/20 shadow-inner' : 'text-indigo-200/70 hover:text-white hover:bg-white/5'}`}
               >
                 <PlusSquare size={16} className="mr-3 shrink-0" />
                 <span className="whitespace-nowrap">Create Project</span>
               </NavLink>
               <NavLink 
                 to="/projects/in-progress" 
-                className={({isActive}) => `flex items-center pl-12 pr-4 py-2.5 text-sm rounded-xl transition-all duration-300 ${isActive ? 'text-white bg-white/20 font-medium shadow-inner' : 'text-indigo-200/70 hover:text-white hover:bg-white/5'}`}
+                className={({isActive}) => `flex items-center pl-12 pr-4 py-2.5 text-sm rounded-xl transition-all duration-300 font-bold ${isActive ? 'text-white bg-white/20 shadow-inner' : 'text-indigo-200/70 hover:text-white hover:bg-white/5'}`}
               >
                 <Clock size={16} className="mr-3 shrink-0" />
                 <span className="whitespace-nowrap">In Progress</span>
               </NavLink>
               <NavLink 
                 to="/projects/completed" 
-                className={({isActive}) => `flex items-center pl-12 pr-4 py-2.5 text-sm rounded-xl transition-all duration-300 ${isActive ? 'text-white bg-white/20 font-medium shadow-inner' : 'text-indigo-200/70 hover:text-white hover:bg-white/5'}`}
+                className={({isActive}) => `flex items-center pl-12 pr-4 py-2.5 text-sm rounded-xl transition-all duration-300 font-bold ${isActive ? 'text-white bg-white/20 shadow-inner' : 'text-indigo-200/70 hover:text-white hover:bg-white/5'}`}
               >
                 <CheckCircle size={16} className="mr-3 shrink-0" />
                 <span className="whitespace-nowrap">Completed</span>
@@ -129,20 +129,20 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
 
           <NavLink 
             to="/settings" 
-            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? 'px-4' : 'justify-center'}`}
+            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? '' : 'justify-center'}`}
             title="Settings"
           >
-            <Settings size={20} className={isExpanded ? "mr-3 shrink-0" : "shrink-0"} />
-            {isExpanded && <span>Settings</span>}
+            <Settings size={20} className={isExpanded ? "mr-3 mt-0.5 shrink-0" : "shrink-0"} />
+            {isExpanded && <span className="leading-tight">Settings</span>}
           </NavLink>
           
           <NavLink 
             to="/profile" 
-            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? 'px-4' : 'justify-center'}`}
+            className={({isActive}) => `${navItemClasses} ${isActive ? activeClasses : ''} ${isExpanded ? '' : 'justify-center'}`}
             title="Profile"
           >
-            <User size={20} className={isExpanded ? "mr-3 shrink-0" : "shrink-0"} />
-            {isExpanded && <span>Profile</span>}
+            <User size={20} className={isExpanded ? "mr-3 mt-0.5 shrink-0" : "shrink-0"} />
+            {isExpanded && <span className="leading-tight">Profile</span>}
           </NavLink>
         </nav>
 

@@ -29,6 +29,8 @@ const generateInvoicePDF = (project, invoiceNo) => {
     doc.text('Bill To:');
     doc.text(`Customer Name: ${project.customerName}`);
     doc.text(`Customer Phone: ${project.customerPhone}`);
+    if (project.customerEmail) doc.text(`Customer Email: ${project.customerEmail}`);
+    if (project.customerAddress) doc.text(`Customer Address: ${project.customerAddress}`);
     doc.moveDown();
 
     // Project Details Table
@@ -41,11 +43,53 @@ const generateInvoicePDF = (project, invoiceNo) => {
     const currentY = doc.y + 10;
     doc.text(project.projectName, 60, currentY);
     doc.text(project.description || 'N/A', 200, currentY);
-    doc.text(`Rs. ${project.price}`, 450, currentY);
+    doc.text(`Rs. ${project.price - (project.hostingEnd || 0) - (project.maintEnd || 0)}`, 450, currentY);
 
+    let nextY = currentY + 20;
+    if (project.hostingEnd > 0) {
+      doc.text('Hosting & Deployment', 60, nextY);
+      doc.text('One-time setup', 200, nextY);
+      doc.text(`Rs. ${project.hostingEnd}`, 450, nextY);
+      nextY += 20;
+    }
+
+    if (project.maintEnd > 0) {
+      doc.text('Monthly Maintenance', 60, nextY);
+      doc.text('Support & Updates', 200, nextY);
+      doc.text(`Rs. ${project.maintEnd}`, 450, nextY);
+      nextY += 20;
+    }
+
+    const subtotal = project.price + (project.discountType === 'percentage' ? (project.price / (1 - project.discountValue / 100)) - project.price : (project.discountType === 'amount' ? project.discountValue : 0));
+    // Note: The above is a bit complex because project.price is already the final price.
+    // Let's just use the fields stored in the model to show the breakdown.
+    
     // Footer
-    doc.moveDown(5);
-    doc.fontSize(14).text(`Total: Rs. ${project.price}`, { align: 'right' });
+    doc.moveDown(4);
+    
+    // Subtotal
+    const baseAmount = project.price + (project.discountType === 'percentage' ? 
+      (project.price / (1 - project.discountValue / 100)) * (project.discountValue / 100) : 
+      project.discountValue);
+      
+    // Actually, it's easier to just calculate it from the stored fields:
+    const calculatedSubtotal = (project.price + (project.discountType === 'amount' ? project.discountValue : 0)) / (project.discountType === 'percentage' ? (1 - project.discountValue/100) : 1);
+    // This is getting tricky because of floating points. 
+    // Let's just use the direct logic:
+    
+    doc.fontSize(10).text('Subtotal:', 350, doc.y);
+    doc.text(`Rs. ${project.price + (project.discountType === 'none' ? 0 : (project.discountType === 'amount' ? project.discountValue : (project.price / (1 - project.discountValue/100)) * (project.discountValue/100)))}`, 450, doc.y - 12);
+    
+    if (project.discountType !== 'none') {
+      doc.fillColor('#ef4444').text(`Discount (${project.discountType === 'percentage' ? project.discountValue + '%' : 'Fixed'}):`, 350, doc.y + 5);
+      const discVal = project.discountType === 'percentage' ? (project.price / (1 - project.discountValue/100)) * (project.discountValue/100) : project.discountValue;
+      doc.text(`- Rs. ${discVal.toFixed(2)}`, 450, doc.y - 12);
+      doc.fillColor('#000');
+    }
+    
+    doc.moveDown();
+    doc.fontSize(16).fillColor('#4f46e5').text('Grand Total:', 350, doc.y);
+    doc.text(`Rs. ${project.price.toFixed(2)}`, 450, doc.y - 18);
 
     doc.end();
 

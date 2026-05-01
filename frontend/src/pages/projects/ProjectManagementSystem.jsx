@@ -2,11 +2,11 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
-import { Edit, PlusSquare, Trash2, Plus, Minus, Server, Wrench, ArrowRight } from 'lucide-react';
+import { Edit, PlusSquare, Trash2, Plus, Minus, Server, Wrench, ArrowRight, Copy } from 'lucide-react';
 import DataTable from '../../components/DataTable';
 
 const ProjectManagementSystem = () => {
-  // Form State
+  // ... (previous state)
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -32,7 +32,7 @@ const ProjectManagementSystem = () => {
   // Fetch Projects
   const fetchProjects = useCallback(async () => {
     try {
-      const res = await axios.get(`/projects?category=management&page=${page}&limit=100`);
+      const res = await axios.get(`/projects?category=management&page=${page}&limit=5`);
       setAllData(res.data.projects);
       setPages(res.data.pages);
     } catch (error) {
@@ -105,6 +105,26 @@ const ProjectManagementSystem = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleCopyClick = (project) => {
+    setEditingId(null);
+    setFormData({
+      projectName: `${project.projectName} (Copy)`,
+      projectType: project.projectType || '',
+      description: project.description || '',
+      pricingItems: project.pricingItems && project.pricingItems.length > 0 
+        ? project.pricingItems.map(item => ({ ...item }))
+        : [{ label: 'General', startPrice: project.price, endPrice: project.price }],
+      hostingStart: project.hostingStart || '',
+      hostingEnd: project.hostingEnd || '',
+      maintStart: project.maintStart || '',
+      maintEnd: project.maintEnd || '',
+      category: 'management'
+    });
+    setIsFormOpen(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast.success('Project details copied! Adjust and save as new.');
+  };
+
   const handleAddNewClick = () => {
     setEditingId(null);
     setFormData({
@@ -136,7 +156,7 @@ const ProjectManagementSystem = () => {
         toast.success('Project updated successfully!');
       } else {
         await axios.post('/projects', formData);
-        toast.success('Project added successfully!');
+        toast.success('Project saved successfully!');
       }
       cancelForm();
       fetchProjects();
@@ -215,6 +235,9 @@ const ProjectManagementSystem = () => {
       <div className="flex items-center space-x-2">
         <button onClick={() => handleEditClick(row)} className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded transition-colors" title="Edit Details">
           <Edit size={18} />
+        </button>
+        <button onClick={() => handleCopyClick(row)} className="p-1.5 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20 rounded transition-colors" title="Copy / Duplicate">
+          <Copy size={18} />
         </button>
         <button onClick={() => deleteProject(row._id)} className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors" title="Delete Project">
           <Trash2 size={18} />

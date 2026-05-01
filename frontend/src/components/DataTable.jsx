@@ -1,4 +1,3 @@
-import React from 'react';
 import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
 
 const DataTable = ({ columns, data, loading, page, pages, onPageChange, searchTerm, onSearchChange }) => {
@@ -79,7 +78,7 @@ const DataTable = ({ columns, data, loading, page, pages, onPageChange, searchTe
       </div>
 
       {/* Pagination */}
-      {!loading && pages > 1 && (
+      {!loading && pages >= 1 && (
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
           <span className="text-sm text-gray-700 dark:text-gray-300">
             Page <span className="font-medium">{page}</span> of <span className="font-medium">{pages}</span>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import Topbar from '../components/Topbar';
@@ -34,8 +34,10 @@ const AdminLayout = () => {
           </div>
         </main>
         
-        <footer className="bg-white dark:bg-gray-900 py-4 text-center border-t border-gray-200 dark:border-gray-800">
-          <p className="text-sm text-gray-500 dark:text-gray-400">© GnanaStack Technologies</p>
+        <footer className="bg-white dark:bg-gray-900 py-6 text-center border-t border-gray-200 dark:border-gray-800">
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400 italic">
+            © {new Date().getFullYear()} GnanaStack Technologies. All rights reserved.
+          </p>
         </footer>
       </div>
     </div>

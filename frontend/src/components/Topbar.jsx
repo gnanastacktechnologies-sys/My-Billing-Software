@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Menu, Bell, Moon, Sun, User as UserIcon, LogOut } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
@@ -45,6 +45,14 @@ const Topbar = ({ toggleSidebar, toggleDarkMode, darkMode }) => {
           className="text-gray-500 hover:text-indigo-600 dark:text-gray-400 dark:hover:text-indigo-400 transition-colors"
         >
           {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+        </button>
+
+        <button 
+          onClick={handleLogout}
+          className="md:hidden text-gray-500 hover:text-red-500 dark:text-gray-400 dark:hover:text-red-400 transition-colors"
+          title="Logout"
+        >
+          <LogOut size={20} />
         </button>
 
         <div className="relative" ref={dropdownRef}>
